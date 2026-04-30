@@ -4,7 +4,10 @@
       "Bash(find \"C:\\\\Users\\\\joaon\\\\Projetos\\\\Assistente Financeiro \\(FinBot\\)\\\\3-Project\\\\MVP\" -type f -name \"*.json\" -o -name \"*.md\" -o -name \"*.txt\" -o -name \"*.toml\" -o -name \"Makefile\" -o -name \"*.yml\" -o -name \"*.yaml\")",
       "Bash(ls:*)",
       "Bash(find \"C:\\\\Users\\\\joaon\\\\Projetos\\\\Assistente Financeiro \\(FinBot\\)\\\\3-Project\\\\MVP\" -type f)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep -E \"\\\\.\\(json|toml|yaml|yml|mod|lock\\)$\")",
+      "Bash(cat:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }

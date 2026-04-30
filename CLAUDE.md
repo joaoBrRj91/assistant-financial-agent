@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FinBot is an MVP for a conversational financial education chatbot for Brazilian financial educator Maurício Fidelis. It guides users through a structured 4-stage financial onboarding journey, ultimately inviting them to a paid consultation.
+FinBot is an MVP for a conversational financial education chatbot for Brazilian financial educator Maurício Fidelis. It guides users through a structured 5-stage financial onboarding journey, ultimately inviting them to a paid consultation.
 
 All user-facing content is in **Brazilian Portuguese**.
 
@@ -18,9 +18,17 @@ No build tools are required. Open any HTML file directly in a browser:
 
 The chat UI calls `https://api.anthropic.com/v1/messages` directly from the browser (requires a valid Anthropic API key and internet connection). There is no backend or build step.
 
+## Running Tests
+
+```
+npm run test
+```
+
+Uses Vitest with jsdom environment. 53 tests across 3 suites: `useConversation`, `tokenParser`, `anthropicService`.
+
 ## Architecture
 
-### Conversational Flow (4 Stages)
+### Conversational Flow (5 Stages)
 
 | Stage | Name | Purpose |
 |-------|------|---------|
@@ -46,7 +54,21 @@ The chat UI calls `https://api.anthropic.com/v1/messages` directly from the brow
 - `General/Code Mockup/assistente_financeiro_mvp.html` — ~2,100-line self-contained app; contains all HTML, CSS, and JS
 - `General/Code Mockup/system_prompt_finbot.js` — System prompt as a JS module (~500 lines)
 - `General/Docs/Persona/assistente_educacao_financeira_v4.md` — Plain-text reference version of the system prompt (easier to edit)
-- `src/` — Empty; reserved for future backend
+- `src/constants/systemPrompt.js` — System prompt exported as ES module
+- `src/hooks/useConversation.js` — Core stateful hook: message history, API calls, token parsing, localStorage persistence
+- `src/services/anthropicService.js` — Thin fetch wrapper for `POST /v1/messages`
+- `src/utils/tokenParser.js` — Stateless parser; extracts `calcData`, `isCTA`, `returningTheme` from raw API text
+- `src/__tests__/` — Vitest test suite (53 tests across 3 files)
+- `src/SpecStructure/specs/` — Acceptance-criteria specs for 4 upcoming UI modules (ConversationalEngine, ReserveCard, ProfileStageManager, CommercialCTA)
+
+### Module Responsibilities
+
+| Module | File | Role |
+|--------|------|------|
+| Hook | `src/hooks/useConversation.js` | State, optimistic updates, localStorage, subscribe/notify |
+| Service | `src/services/anthropicService.js` | API transport only; no state |
+| Parser | `src/utils/tokenParser.js` | Pure function; no side effects |
+| Prompt | `src/constants/systemPrompt.js` | Single source of truth for system prompt |
 
 ### Design System (CSS Variables)
 
@@ -76,7 +98,8 @@ Out-of-scope requests should be acknowledged warmly and redirected to Maurício'
 
 ## Known Limitations
 
-- **No persistence** — conversation history lives in JS memory, lost on refresh
-- **No backend** — client-side only; API key is embedded in the frontend (must be secured before production)
-- Stage 4 (lead capture) is partially implemented
+- **Persistence implemented** — conversation history, client type, and stage saved to localStorage (`mf_chat_history`, `mf_client_type`, `mf_stage`)
+- **No backend** — client-side only; API key embedded in HTML demo (must be secured before production)
+- Stage 4 (lead capture/CTA) is specified but UI components not yet built (see `src/SpecStructure/specs/04_cta_spec.md`)
+- ReserveCard, StageBadge, and ProfileStageManager UI components pending implementation (specs in `src/SpecStructure/specs/`)
 - No authentication, analytics, or admin dashboard (planned for V2+)
