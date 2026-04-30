@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"C:\\\\Users\\\\joaon\\\\Projetos\\\\Assistente Financeiro \\(FinBot\\)\\\\3-Project\\\\MVP\" -type f -name \"*.json\" -o -name \"*.md\" -o -name \"*.txt\" -o -name \"*.toml\" -o -name \"Makefile\" -o -name \"*.yml\" -o -name \"*.yaml\")",
+      "Bash(ls:*)",
+      "Bash(find \"C:\\\\Users\\\\joaon\\\\Projetos\\\\Assistente Financeiro \\(FinBot\\)\\\\3-Project\\\\MVP\" -type f)",
+      "Bash(find:*)"
+    ]
+  }
+}
