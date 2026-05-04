@@ -1,0 +1,34 @@
+.reserve-card {
+  margin-top: 10px;
+  background: #f8f9fa;
+  border: 1px solid #e0ddd8;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: system-ui, sans-serif;
+  font-size: 0.9rem;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eeebe6;
+}
+
+.card-row:last-child {
+  border-bottom: none;
+}
+
+.card-row-label {
+  color: #888780;
+}
+
+.card-row-value {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.card-row-value--highlight {
+  color: #1D9E75;
+}
