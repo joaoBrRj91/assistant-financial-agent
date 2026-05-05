@@ -1,0 +1,13 @@
+.context-tag {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-family: system-ui, sans-serif;
+  margin: 4px 0;
+}
+
+.context-tag--amber {
+  background: #FEF3C7;
+  border-left: 3px solid #BA7517;
+  color: #854F0B;
+}
