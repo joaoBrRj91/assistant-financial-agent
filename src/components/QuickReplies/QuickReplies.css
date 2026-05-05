@@ -1,0 +1,23 @@
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.quick-reply-btn {
+  background: #fff;
+  border: 1.5px solid #1D9E75;
+  border-radius: 16px;
+  color: #0F6E56;
+  font-size: 0.8rem;
+  font-family: system-ui, sans-serif;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.quick-reply-btn:hover {
+  background: #1D9E75;
+  color: #fff;
+}
