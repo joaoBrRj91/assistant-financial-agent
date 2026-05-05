@@ -2,6 +2,7 @@
   "name": "finbot-mvp",
   "type": "module",
   "scripts": {
+    "start": "npx serve . --listen 3000",
     "test": "vitest run"
   },
   "devDependencies": {
