@@ -10,16 +10,16 @@ export function createCTACard() {
 
   const heading = document.createElement('p')
   heading.className = 'cta-card__heading'
-  heading.textContent = 'Want to go further?'
+  heading.textContent = 'Quer dar o próximo passo?'
 
   const body = document.createElement('p')
   body.className = 'cta-card__body'
   body.textContent =
-    "Maurício offers individual consultations — together you'll build a real budget, find where money is leaking, and create a personalized financial strategy."
+    'Maurício oferece consultorias individuais — juntos vocês vão montar um orçamento real, identificar onde o dinheiro está vazando e criar uma estratégia financeira personalizada.'
 
   const question = document.createElement('p')
   question.className = 'cta-card__question'
-  question.textContent = 'Can I send you more information?'
+  question.textContent = 'Posso te enviar mais informações?'
 
   card.appendChild(heading)
   card.appendChild(body)

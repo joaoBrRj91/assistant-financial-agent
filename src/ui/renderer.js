@@ -1,4 +1,5 @@
 import { chatArea, stageBadgeSlot, quickRepliesArea } from './domRefs.js'
+import { renderMarkdown } from '../utils/renderMarkdown.js'
 import { createReserveCard }    from '../components/ReserveCard/ReserveCard.js'
 import { createCTABubble }      from '../components/CTABubble/CTABubble.js'
 import { createCTAQuickReplies } from '../components/CTAQuickReplies/CTAQuickReplies.js'
@@ -21,7 +22,7 @@ export function appendMessage(role, text) {
   wrap.className = `msg-wrap ${role}`
   const bubble = document.createElement('div')
   bubble.className = 'msg'
-  bubble.textContent = text
+  bubble.innerHTML = renderMarkdown(text)
   wrap.appendChild(bubble)
   chatArea.appendChild(wrap)
 }
