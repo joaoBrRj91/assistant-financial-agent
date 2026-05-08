@@ -1,4 +1,5 @@
 # SPEC · Conversational Engine
+
 **Module:** `ConversationalEngine`
 **Product:** Financial Assistant · Maurício Fidelis
 **Version:** MVP 1.0
@@ -105,7 +106,7 @@ Quando identificar que é cliente recorrente e já souber o tema anterior, inclu
 ## API CALL
 
 - **Endpoint:** `https://api.anthropic.com/v1/messages`
-- **Model:** `claude-sonnet-4-20250514`
+- **Model:** `claude-haiku-4-5-20251001`
 - **max_tokens:** `1000`
 - **Inputs:** full `messages[]` array + system prompt string
 - **Output:** `data.content[0].text` (raw string, may contain tokens)
@@ -127,6 +128,7 @@ Quando identificar que é cliente recorrente e já souber o tema anterior, inclu
 ```
 
 **Rules:**
+
 - Strip all three token patterns from `text` before returning
 - If CALC JSON is malformed, log a warning and return `calcData: null` — do not throw
 - `calcData` is only valid when all five fields (`salario`, `despesas`, `meta`, `mensal`, `prazo`) are present positive numbers
@@ -137,15 +139,15 @@ Quando identificar que é cliente recorrente e já souber o tema anterior, inclu
 
 The hook maintains:
 
-| State | Type | Persisted |
-|---|---|---|
-| `messages[]` | `{role, content}[]` | Yes — localStorage `mf_chat_history` |
-| `isLoading` | boolean | No |
-| `lastPayload` | ParsedPayload or null | No — ephemeral, current render only |
+| State         | Type                  | Persisted                            |
+| ------------- | --------------------- | ------------------------------------ |
+| `messages[]`  | `{role, content}[]`   | Yes — localStorage `mf_chat_history` |
+| `isLoading`   | boolean               | No                                   |
+| `lastPayload` | ParsedPayload or null | No — ephemeral, current render only  |
 
 **Initialization:** load from localStorage on first render. If storage is absent, corrupt, or not a valid array, fall back to a single opening message:
 
-> *"Olá! Que bom ter você aqui. Sou o assistente do Maurício Fidelis, educador financeiro. Estou aqui para te ajudar a organizar sua vida financeira de forma simples e prática. Antes de começar — você já teve alguma conversa comigo antes ou é a primeira vez?"*
+> _"Olá! Que bom ter você aqui. Sou o assistente do Maurício Fidelis, educador financeiro. Estou aqui para te ajudar a organizar sua vida financeira de forma simples e prática. Antes de começar — você já teve alguma conversa comigo antes ou é a primeira vez?"_
 
 **Optimistic update:** append the user message to `messages[]` immediately before the API call resolves, so it appears in the UI without delay.
 
@@ -158,7 +160,8 @@ The hook maintains:
 ## ERROR HANDLING
 
 Any network failure or HTTP error must:
-1. Append a friendly fallback assistant message: *"Tive um problema de conexão. Pode tentar de novo?"*
+
+1. Append a friendly fallback assistant message: _"Tive um problema de conexão. Pode tentar de novo?"_
 2. Set a valid `lastPayload` for that fallback (all fields null/false)
 3. Always reset `isLoading` to `false`
 

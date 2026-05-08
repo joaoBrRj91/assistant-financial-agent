@@ -4,19 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FinBot is an MVP for a conversational financial education chatbot for Brazilian financial educator Maurício Fidelis. It guides users through a structured 5-stage financial onboarding journey, ultimately inviting them to a paid consultation.
+FinBot is an MVP for a conversational financial education chatbot for Brazilian financial educator Maurício Fidelis. It guides users through a structured 6-stage financial onboarding journey, ultimately inviting them to a paid consultation via WhatsApp.
 
 All user-facing content is in **Brazilian Portuguese**.
 
 ## Running the Project
 
-No build tools are required. Open any HTML file directly in a browser:
+No build tools are required. Serve `index.html` via a local HTTP server (required for ES modules):
 
-- `General/Code Mockup/assistente_financeiro_mvp.html` — Full interactive demo (primary application)
-- `General/UI/exemplo_conversa_mvp_financeiro.html` — Annotated example conversation
-- `General/UI/mvp_core_prompt_financeiro.html` — Prompt documentation and MVP scope analysis
+```
+npx serve .
+# or
+python -m http.server 8080
+```
 
-The chat UI calls `https://api.anthropic.com/v1/messages` directly from the browser (requires a valid Anthropic API key and internet connection). There is no backend or build step.
+Then open `http://localhost:PORT` in a browser. Enter a valid Anthropic API key when prompted.
+
+The chat UI calls `https://api.anthropic.com/v1/messages` directly from the browser. There is no backend or build step.
+
+### Reference documents (read-only)
+
+- `Docs/Code Mockup/assistente_financeiro_mvp.html` — Original monolithic demo (~2,100 lines)
+- `Docs/Business/Persona/assistente_educacao_financeira_v4.md` — Plain-text reference version of the system prompt
 
 ## Running Tests
 
@@ -24,51 +33,149 @@ The chat UI calls `https://api.anthropic.com/v1/messages` directly from the brow
 npm run test
 ```
 
-Uses Vitest with jsdom environment. 53 tests across 3 suites: `useConversation`, `tokenParser`, `anthropicService`.
+Uses Vitest with jsdom environment. 7 test files covering all major modules.
 
 ## Architecture
 
-### Conversational Flow (5 Stages)
+### Conversational Flow (6 Stages)
 
-| Stage | Name | Purpose |
-|-------|------|---------|
-| 0 | Identificação | Greet and classify: new vs. returning user |
-| 1 | Diagnóstico | One-question-at-a-time financial health check |
-| 2 | Organização | Teach expense tracking; collect monthly income |
-| 3 | Reserva Estratégica | Generate personalized emergency fund plan |
-| 4 | Lead/Consultoria | Invite to paid consultation |
+| Stage Key | Label | Purpose |
+|-----------|-------|---------|
+| `start` | — | Initial state before first interaction |
+| `identification` | Identificação | Greet and classify: new vs. returning user |
+| `diagnosis` | Diagnóstico | One-question-at-a-time financial health check |
+| `organization` | Organização | Teach expense tracking; collect monthly income |
+| `reserve` | Reserva Estratégica | Generate personalized emergency fund plan |
+| `lead` | Consultoria | Invite to paid consultation via WhatsApp |
 
 ### Message Processing Pipeline
 
-1. User sends message → appended to in-memory conversation history
-2. Full history + system prompt sent to Claude API (`claude-sonnet-4-20250514`)
-3. Bot response parsed for embedded special tokens:
-   - `|||CALC|||{JSON}|||` → renders a styled financial calculation card
-   - `|||CTA|||` → renders a consultation call-to-action bubble
-   - `|||RETURNING|||{theme}|||` → sets returning-customer context
-4. Stage detected from response content → updates header badge and divider
-5. Quick reply buttons updated per stage
+1. User submits message → `useConversation.sendMessage(text)`
+2. `useProfileStage.processUserMessage(text)` detects client type from early messages
+3. Full history + system prompt sent to Claude API (`claude-haiku-4-5-20251001`)
+4. Bot response parsed by `tokenParser` for embedded special tokens:
+   - `|||CALC|||{JSON}|||` → renders a `ReserveCard` financial calculation card
+   - `|||CTA|||` → renders a `CTABubble` consultation offer
+   - `|||RETURNING|||{theme}|||` → sets returning-customer context via `ContextTag`
+5. `useProfileStage.processResponseText(text)` detects stage transitions from keywords
+6. `renderer.renderBotMessage()` orchestrates all UI output: text, card, CTA, context tag, divider
+7. `renderer.renderQuickReplies()` updates stage-specific buttons
 
-### Key Files
+### File Structure
 
-- `General/Code Mockup/assistente_financeiro_mvp.html` — ~2,100-line self-contained app; contains all HTML, CSS, and JS
-- `General/Code Mockup/system_prompt_finbot.js` — System prompt as a JS module (~500 lines)
-- `General/Docs/Persona/assistente_educacao_financeira_v4.md` — Plain-text reference version of the system prompt (easier to edit)
-- `src/constants/systemPrompt.js` — System prompt exported as ES module
-- `src/hooks/useConversation.js` — Core stateful hook: message history, API calls, token parsing, localStorage persistence
-- `src/services/anthropicService.js` — Thin fetch wrapper for `POST /v1/messages`
-- `src/utils/tokenParser.js` — Stateless parser; extracts `calcData`, `isCTA`, `returningTheme` from raw API text
-- `src/__tests__/` — Vitest test suite (53 tests across 3 files)
-- `src/SpecStructure/specs/` — Acceptance-criteria specs for 4 upcoming UI modules (ConversationalEngine, ReserveCard, ProfileStageManager, CommercialCTA)
+```
+MVP/
+├── index.html                          Entry point (API key screen → chat UI)
+├── package.json
+├── vitest.config.js
+│
+├── src/
+│   ├── main.js                         App initialization & event wiring
+│   │
+│   ├── hooks/
+│   │   ├── useConversation.js          Messages, API calls, token parsing, localStorage
+│   │   └── useProfileStage.js          Stage tracking, client type, localStorage
+│   │
+│   ├── services/
+│   │   └── anthropicService.js         Thin fetch wrapper for POST /v1/messages
+│   │
+│   ├── utils/
+│   │   ├── tokenParser.js              Pure parser: extracts calcData, isCTA, returningTheme
+│   │   ├── stageDetector.js            Stage transition detection by keyword matching
+│   │   ├── ctaDetector.js              Affirmative intent detection (isAffirmative)
+│   │   ├── formatReserve.js            BRL currency & timeline formatting
+│   │   └── whatsapp.js                 wa.me deep link builder
+│   │
+│   ├── constants/
+│   │   ├── systemPrompt.js             Single source of truth for system prompt
+│   │   ├── stageConfig.js              Stage definitions, keywords, color themes
+│   │   ├── quickReplies.js             Quick reply options per stage
+│   │   └── whatsapp.js                 Phone number & message template config
+│   │
+│   ├── components/
+│   │   ├── ReserveCard/
+│   │   │   ├── ReserveCard.js          Financial calculation card (5 rows)
+│   │   │   └── CardRow.js              Individual card row element
+│   │   ├── CTABubble/
+│   │   │   └── CTABubble.js            Consultation offer bubble (teal border)
+│   │   ├── CTACard/
+│   │   │   └── CTACard.js              Fixed-content CTA card
+│   │   ├── CTAQuickReplies/
+│   │   │   └── CTAQuickReplies.js      Yes/No buttons for CTA
+│   │   ├── QuickReplies/
+│   │   │   └── QuickReplies.js         Stage-specific quick reply buttons
+│   │   ├── StageBadge/
+│   │   │   └── StageBadge.js           Header badge showing current stage
+│   │   ├── StageDivider/
+│   │   │   └── StageDivider.js         Visual separator between stage transitions
+│   │   └── ContextTag/
+│   │       └── ContextTag.js           Amber tag for returning client context
+│   │
+│   ├── ui/
+│   │   ├── domRefs.js                  Cached DOM element references
+│   │   └── renderer.js                 All rendering functions & UI orchestration
+│   │
+│   ├── styles/
+│   │   └── main.css                    All styling (CSS variables, layouts)
+│   │
+│   ├── SpecStructure/
+│   │   └── specs/                      Acceptance-criteria specs (implemented)
+│   │       ├── 01_conversational_engine_spec.md
+│   │       ├── 02_reserve_calculator_spec.md
+│   │       ├── 03_profile_stage_spec.md
+│   │       └── 04_cta_spec.md
+│   │
+│   └── __tests__/
+│       ├── useConversation.test.js
+│       ├── tokenParser.test.js
+│       ├── anthropicService.test.js
+│       ├── formatReserve.test.js
+│       ├── ReserveCard.test.js
+│       ├── profileStageManager.test.js
+│       └── commercialCTA.test.js
+│
+└── Docs/                               Reference and legacy documents (read-only)
+    ├── Business/
+    │   ├── Persona/
+    │   │   └── assistente_educacao_financeira_v4.md
+    │   └── Specifications/
+    │       └── mvp_spec_assistente_financeiro.html
+    ├── Code Mockup/
+    │   ├── assistente_financeiro_mvp.html
+    │   └── system_prompt_finbot.js
+    └── UI/
+        ├── exemplo_conversa_mvp_financeiro.html
+        └── mvp_core_prompt_financeiro.html
+```
 
 ### Module Responsibilities
 
-| Module | File | Role |
-|--------|------|------|
-| Hook | `src/hooks/useConversation.js` | State, optimistic updates, localStorage, subscribe/notify |
-| Service | `src/services/anthropicService.js` | API transport only; no state |
-| Parser | `src/utils/tokenParser.js` | Pure function; no side effects |
-| Prompt | `src/constants/systemPrompt.js` | Single source of truth for system prompt |
+| Module | File | Owns | Does NOT own |
+|--------|------|------|--------------|
+| ConversationalEngine | `src/hooks/useConversation.js` | Messages, API calls, token parsing, localStorage | Stage/client state, rendering |
+| ProfileStageManager | `src/hooks/useProfileStage.js` | Stage tracking, client type, localStorage | API calls, rendering |
+| Service | `src/services/anthropicService.js` | HTTP transport only | Any state |
+| Parser | `src/utils/tokenParser.js` | Pure token extraction | Any side effects |
+| Renderer | `src/ui/renderer.js` | All DOM updates | State management, API calls |
+| Components | `src/components/` | DOM creation, formatting | State, API calls |
+
+### localStorage Keys
+
+| Key | Owner | Content |
+|-----|-------|---------|
+| `mf_chat_history` | `useConversation` | Full message array (JSON) |
+| `mf_stage` | `useProfileStage` | Current stage key string |
+| `mf_client_type` | `useProfileStage` | `'new'` \| `'returning'` \| `null` |
+
+### Special Tokens
+
+| Token | Format | Renders |
+|-------|--------|---------|
+| CALC | `|||CALC|||{JSON}|||` | `ReserveCard` with 5 required numeric fields |
+| CTA | `|||CTA|||` | `CTABubble` + `CTACard` + `CTAQuickReplies` |
+| RETURNING | `|||RETURNING|||{theme}|||` | `ContextTag` with amber background |
+
+CALC JSON must contain: `gastosMensais`, `metaReserva`, `prazoMeses`, `aporteMensal`, `percentualRenda` (all positive numbers).
 
 ### Design System (CSS Variables)
 
@@ -77,15 +184,6 @@ Uses Vitest with jsdom environment. 53 tests across 3 suites: `useConversation`,
 - Neutral: Gray (`#5F5E5A`, `#888780`)
 - Typography: Georgia serif (display), system-ui (UI)
 - Chat container: 420px × 680px, responsive
-
-### Special Message Bubble Types
-
-| Type | Appearance | Trigger |
-|------|-----------|---------|
-| Bot | Gray, left-aligned | Standard response |
-| User | Teal, right-aligned | User input |
-| CTA | Border-highlighted | `|||CTA|||` token |
-| Returning | Amber background | `|||RETURNING|||` token |
 
 ## System Prompt Scope (MVP Boundaries)
 
@@ -98,8 +196,7 @@ Out-of-scope requests should be acknowledged warmly and redirected to Maurício'
 
 ## Known Limitations
 
-- **Persistence implemented** — conversation history, client type, and stage saved to localStorage (`mf_chat_history`, `mf_client_type`, `mf_stage`)
-- **No backend** — client-side only; API key embedded in HTML demo (must be secured before production)
-- Stage 4 (lead capture/CTA) is specified but UI components not yet built (see `src/SpecStructure/specs/04_cta_spec.md`)
-- ReserveCard, StageBadge, and ProfileStageManager UI components pending implementation (specs in `src/SpecStructure/specs/`)
-- No authentication, analytics, or admin dashboard (planned for V2+)
+- **No backend** — client-side only; API key entered at runtime (not stored server-side)
+- **Direct browser API calls** — uses `anthropic-dangerous-direct-browser-access` header; must be secured before production
+- **No authentication, analytics, or admin dashboard** — planned for V2+
+- **WhatsApp config uses placeholder** — `src/constants/whatsapp.js` phone number must be updated before production
