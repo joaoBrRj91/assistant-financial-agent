@@ -1,4 +1,5 @@
 import { createCTACard } from '../CTACard/CTACard.js'
+import { renderMarkdown } from '../../utils/renderMarkdown.js'
 
 /**
  * Creates the CTA bubble DOM element.
@@ -19,7 +20,7 @@ export function createCTABubble(text, options = {}) {
   if (text && text.length > 0) {
     const textEl = document.createElement('p')
     textEl.className = 'cta-bubble__text'
-    textEl.textContent = text
+    textEl.innerHTML = renderMarkdown(text)
     bubble.appendChild(textEl)
   }
 

@@ -15,14 +15,14 @@ export function createCTAQuickReplies(callbacks = {}) {
 
   const affirmBtn = document.createElement('button')
   affirmBtn.className = 'quick-reply-btn quick-reply-btn--primary teal'
-  affirmBtn.textContent = "Yes, I'd like to know more!"
+  affirmBtn.textContent = 'Sim, quero saber mais!'
   affirmBtn.addEventListener('click', () => {
     if (typeof onAffirmative === 'function') onAffirmative()
   })
 
   const declineBtn = document.createElement('button')
   declineBtn.className = 'quick-reply-btn'
-  declineBtn.textContent = 'I still have questions'
+  declineBtn.textContent = 'Ainda tenho dúvidas'
   declineBtn.addEventListener('click', () => {
     if (typeof onDecline === 'function') onDecline()
   })
