@@ -3,8 +3,8 @@ import { useProfileStage }  from './hooks/useProfileStage.js'
 import { buildWhatsAppUrl } from './utils/whatsapp.js'
 import { isAffirmative }    from './utils/ctaDetector.js'
 import { WHATSAPP_CONFIG }  from './constants/whatsapp.js'
+import { ANTHROPIC_API_KEY } from './config.js'
 import {
-  apiKeyScreen, apiKeyForm, apiKeyInput,
   app, chatArea, msgInput, sendBtn, typingEl,
 } from './ui/domRefs.js'
 import {
@@ -68,9 +68,6 @@ function onStateChange(state) {
 }
 
 function initApp(apiKey) {
-  apiKeyScreen.hidden = true
-  app.hidden = false
-
   profile = useProfileStage()
   conversation = useConversation(apiKey)
 
@@ -88,9 +85,4 @@ function initApp(apiKey) {
   sendBtn.addEventListener('click', () => submitMessage(msgInput.value))
 }
 
-apiKeyForm.addEventListener('submit', e => {
-  e.preventDefault()
-  const key = apiKeyInput.value.trim()
-  if (!key) return
-  initApp(key)
-})
+initApp(ANTHROPIC_API_KEY)

@@ -8,30 +8,8 @@
 </head>
 <body>
 
-  <!-- API Key Entry Screen -->
-  <div id="api-key-screen">
-    <div class="key-screen-logo">
-      FinBot
-      <span>Assistente Financeiro · Maurício Fidelis</span>
-    </div>
-    <form id="api-key-form" style="display:flex;flex-direction:column;gap:0.75rem;">
-      <label class="key-screen-label" for="api-key-input">Anthropic API Key</label>
-      <input
-        id="api-key-input"
-        type="password"
-        placeholder="sk-ant-..."
-        autocomplete="off"
-        required
-      />
-      <p class="key-screen-hint">
-        Your key is used only in this browser session and is never stored or sent anywhere other than the Anthropic API.
-      </p>
-      <button id="start-btn" type="submit">Iniciar conversa</button>
-    </form>
-  </div>
-
   <!-- Chat Application -->
-  <div id="app" hidden>
+  <div id="app">
     <!-- Header -->
     <header class="header">
       <div class="avatar">MF</div>
