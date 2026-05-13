@@ -179,6 +179,7 @@ describe('useConversation', () => {
 
       const { lastPayload } = engine.getState()
       expect(lastPayload).not.toBeNull()
+      expect(lastPayload.text).toBe('Tive um problema de conexão. Pode tentar de novo?')
       expect(lastPayload.calcData).toBeNull()
       expect(lastPayload.isCTA).toBe(false)
       expect(lastPayload.returningTheme).toBeNull()
