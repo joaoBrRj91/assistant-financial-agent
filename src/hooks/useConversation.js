@@ -12,13 +12,15 @@ const OPENING_MESSAGE = {
     "Antes de começar — você já teve alguma conversa comigo antes ou é a primeira vez?",
 };
 
+const FALLBACK_TEXT = "Tive um problema de conexão. Pode tentar de novo?";
+
 const FALLBACK_MESSAGE = {
   role: "assistant",
-  content: "Tive um problema de conexão. Pode tentar de novo?",
+  content: FALLBACK_TEXT,
 };
 
 const FALLBACK_PAYLOAD = {
-  text: null,
+  text: FALLBACK_TEXT,
   calcData: null,
   isCTA: false,
   returningTheme: null,
