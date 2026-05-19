@@ -1,6 +1,5 @@
 import { callAnthropicAPI } from "../services/anthropicService.js";
 import { parseSpecialTokens } from "../utils/tokenParser.js";
-import { SYSTEM_PROMPT } from "../constants/systemPrompt.js";
 
 const STORAGE_KEY = "mf_chat_history";
 
@@ -42,10 +41,9 @@ function loadFromStorage() {
  * Creates a conversational engine that manages message history, API calls,
  * localStorage persistence, and token parsing.
  *
- * @param {string} apiKey  Anthropic API key
  * @returns {{ getState: Function, sendMessage: Function, subscribe: Function }}
  */
-export function useConversation(apiKey) {
+export function useConversation() {
   let _messages = loadFromStorage() ?? [OPENING_MESSAGE];
   let _isLoading = false;
   let _lastPayload = null;
@@ -82,11 +80,7 @@ export function useConversation(apiKey) {
     _notify();
 
     try {
-      const rawResponse = await callAnthropicAPI(
-        _messages,
-        SYSTEM_PROMPT,
-        apiKey,
-      );
+      const rawResponse = await callAnthropicAPI(_messages);
       const parsed = parseSpecialTokens(rawResponse);
 
       // Store raw response so the model sees its own tokens in future turns

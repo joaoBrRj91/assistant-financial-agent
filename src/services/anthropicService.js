@@ -1,38 +1,23 @@
-const ENDPOINT = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-haiku-4-5-20251001";
-const MAX_TOKENS = 1000;
+const BACKEND_URL = 'http://localhost:3001/api/chat'
 
 /**
- * Sends the full message history to the Anthropic API and returns the raw response text.
+ * Sends the conversation history to the FinBot backend and returns the raw response text.
+ * The backend handles LLM provider selection, API key auth, and system prompt injection.
  *
  * @param {{ role: string, content: string }[]} messages
- * @param {string} systemPrompt
- * @param {string} apiKey
- * @returns {Promise<string>} raw response text (may contain special tokens)
+ * @returns {Promise<string>} raw response text (may contain special tokens like |||CALC|||)
  */
-export async function callAnthropicAPI(messages, systemPrompt, apiKey) {
-  const response = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: systemPrompt,
-      messages,
-    }),
-  });
+export async function callAnthropicAPI(messages) {
+  const response = await fetch(BACKEND_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ messages }),
+  })
 
   if (!response.ok) {
-    throw new Error(
-      `Anthropic API error: ${response.status} ${response.statusText}`,
-    );
+    throw new Error(`Backend error: ${response.status} ${response.statusText}`)
   }
 
-  const data = await response.json();
-  return data.content[0].text;
+  const data = await response.json()
+  return data.response
 }

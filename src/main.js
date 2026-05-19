@@ -3,7 +3,6 @@ import { useProfileStage }  from './hooks/useProfileStage.js'
 import { buildWhatsAppUrl } from './utils/whatsapp.js'
 import { isAffirmative }    from './utils/ctaDetector.js'
 import { WHATSAPP_CONFIG }  from './constants/whatsapp.js'
-import { ANTHROPIC_API_KEY } from './config.js'
 import {
   app, chatArea, msgInput, sendBtn, typingEl,
 } from './ui/domRefs.js'
@@ -67,9 +66,9 @@ function onStateChange(state) {
   chatArea.scrollTop = chatArea.scrollHeight
 }
 
-function initApp(apiKey) {
+function initApp() {
   profile = useProfileStage()
-  conversation = useConversation(apiKey)
+  conversation = useConversation()
 
   conversation.subscribe(onStateChange)
 
@@ -85,4 +84,4 @@ function initApp(apiKey) {
   sendBtn.addEventListener('click', () => submitMessage(msgInput.value))
 }
 
-initApp(ANTHROPIC_API_KEY)
+initApp()
