@@ -3,6 +3,7 @@ import { useProfileStage }  from './hooks/useProfileStage.js'
 import { buildWhatsAppUrl } from './utils/whatsapp.js'
 import { isAffirmative }    from './utils/ctaDetector.js'
 import { WHATSAPP_CONFIG }  from './constants/whatsapp.js'
+import { sessionId, trackStage } from './services/analyticsService.js'
 import {
   app, chatArea, msgInput, sendBtn, typingEl,
 } from './ui/domRefs.js'
@@ -68,6 +69,25 @@ function onStateChange(state) {
 
 function initApp() {
   profile = useProfileStage()
+
+  // Wrap stage-advancing methods to fire analytics without touching internals
+  const _origProcessResponseText = profile.processResponseText
+  profile.processResponseText = function(text) {
+    const newStage = _origProcessResponseText(text)
+    if (newStage) trackStage(sessionId, newStage)
+    return newStage
+  }
+
+  const _origForceStage = profile.forceStage
+  profile.forceStage = function(stage) {
+    const before = profile.getState().currentStage
+    _origForceStage(stage)
+    const after = profile.getState().currentStage
+    if (after !== before) trackStage(sessionId, after)
+  }
+
+  trackStage(sessionId, 'start')
+
   conversation = useConversation()
 
   conversation.subscribe(onStateChange)
