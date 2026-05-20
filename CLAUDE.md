@@ -10,17 +10,28 @@ All user-facing content is in **Brazilian Portuguese**.
 
 ## Running the Project
 
-No build tools are required. Serve `index.html` via a local HTTP server (required for ES modules):
+### Frontend (`mvp-frontend/`)
+
+No build tools are required. From `mvp-frontend/`, serve `index.html` via a local HTTP server (required for ES modules):
 
 ```
-npx serve .
+cd mvp-frontend
+npx serve . --listen 3000
 # or
 python -m http.server 8080
 ```
 
 Then open `http://localhost:PORT` in a browser. Enter a valid Anthropic API key when prompted.
 
-The chat UI calls `https://api.anthropic.com/v1/messages` directly from the browser. There is no backend or build step.
+The chat UI calls `https://api.anthropic.com/v1/messages` directly from the browser.
+
+### Backend (`mvp-backend/`)
+
+```
+cd mvp-backend
+npm install
+node server.js
+```
 
 ### Reference documents (read-only)
 
@@ -30,10 +41,11 @@ The chat UI calls `https://api.anthropic.com/v1/messages` directly from the brow
 ## Running Tests
 
 ```
+cd mvp-frontend
 npm run test
 ```
 
-Uses Vitest with jsdom environment. 7 test files covering all major modules.
+Uses Vitest with jsdom environment. 8 test files covering all major modules.
 
 ## Architecture
 
@@ -64,75 +76,88 @@ Uses Vitest with jsdom environment. 7 test files covering all major modules.
 ### File Structure
 
 ```
-MVP/
-├── index.html                          Entry point (API key screen → chat UI)
-├── package.json
-├── vitest.config.js
+MVP/                                    Git repo root
+├── CLAUDE.md
+├── README.md
 │
-├── src/
-│   ├── main.js                         App initialization & event wiring
+├── mvp-frontend/                       Frontend application
+│   ├── index.html                      Entry point (API key screen → chat UI)
+│   ├── package.json
+│   ├── vitest.config.js
 │   │
-│   ├── hooks/
-│   │   ├── useConversation.js          Messages, API calls, token parsing, localStorage
-│   │   └── useProfileStage.js          Stage tracking, client type, localStorage
-│   │
-│   ├── services/
-│   │   └── anthropicService.js         Thin fetch wrapper for POST /v1/messages
-│   │
-│   ├── utils/
-│   │   ├── tokenParser.js              Pure parser: extracts calcData, isCTA, returningTheme
-│   │   ├── stageDetector.js            Stage transition detection by keyword matching
-│   │   ├── ctaDetector.js              Affirmative intent detection (isAffirmative)
-│   │   ├── formatReserve.js            BRL currency & timeline formatting
-│   │   └── whatsapp.js                 wa.me deep link builder
-│   │
+│   └── src/
+│       ├── main.js                     App initialization & event wiring
+│       │
+│       ├── hooks/
+│       │   ├── useConversation.js      Messages, API calls, token parsing, localStorage
+│       │   └── useProfileStage.js      Stage tracking, client type, localStorage
+│       │
+│       ├── services/
+│       │   └── anthropicService.js     Thin fetch wrapper for POST /v1/messages
+│       │
+│       ├── utils/
+│       │   ├── tokenParser.js          Pure parser: extracts calcData, isCTA, returningTheme
+│       │   ├── stageDetector.js        Stage transition detection by keyword matching
+│       │   ├── ctaDetector.js          Affirmative intent detection (isAffirmative)
+│       │   ├── formatReserve.js        BRL currency & timeline formatting
+│       │   └── whatsapp.js             wa.me deep link builder
+│       │
+│       ├── constants/
+│       │   ├── systemPrompt.js         Single source of truth for system prompt
+│       │   ├── stageConfig.js          Stage definitions, keywords, color themes
+│       │   ├── quickReplies.js         Quick reply options per stage
+│       │   └── whatsapp.js             Phone number & message template config
+│       │
+│       ├── components/
+│       │   ├── ReserveCard/
+│       │   │   ├── ReserveCard.js      Financial calculation card (5 rows)
+│       │   │   └── CardRow.js          Individual card row element
+│       │   ├── CTABubble/
+│       │   │   └── CTABubble.js        Consultation offer bubble (teal border)
+│       │   ├── CTACard/
+│       │   │   └── CTACard.js          Fixed-content CTA card
+│       │   ├── CTAQuickReplies/
+│       │   │   └── CTAQuickReplies.js  Yes/No buttons for CTA
+│       │   ├── QuickReplies/
+│       │   │   └── QuickReplies.js     Stage-specific quick reply buttons
+│       │   ├── StageBadge/
+│       │   │   └── StageBadge.js       Header badge showing current stage
+│       │   ├── StageDivider/
+│       │   │   └── StageDivider.js     Visual separator between stage transitions
+│       │   └── ContextTag/
+│       │       └── ContextTag.js       Amber tag for returning client context
+│       │
+│       ├── ui/
+│       │   ├── domRefs.js              Cached DOM element references
+│       │   └── renderer.js             All rendering functions & UI orchestration
+│       │
+│       ├── styles/
+│       │   └── main.css                All styling (CSS variables, layouts)
+│       │
+│       ├── SpecStructure/
+│       │   └── specs/                  Acceptance-criteria specs (implemented)
+│       │       ├── 01_conversational_engine_spec.md
+│       │       ├── 02_reserve_calculator_spec.md
+│       │       ├── 03_profile_stage_spec.md
+│       │       └── 04_cta_spec.md
+│       │
+│       └── __tests__/
+│           ├── useConversation.test.js
+│           ├── tokenParser.test.js
+│           ├── anthropicService.test.js
+│           ├── formatReserve.test.js
+│           ├── ReserveCard.test.js
+│           ├── profileStageManager.test.js
+│           ├── renderMarkdown.test.js
+│           └── commercialCTA.test.js
+│
+├── mvp-backend/                        Backend application
+│   ├── server.js
+│   ├── package.json
 │   ├── constants/
-│   │   ├── systemPrompt.js             Single source of truth for system prompt
-│   │   ├── stageConfig.js              Stage definitions, keywords, color themes
-│   │   ├── quickReplies.js             Quick reply options per stage
-│   │   └── whatsapp.js                 Phone number & message template config
-│   │
-│   ├── components/
-│   │   ├── ReserveCard/
-│   │   │   ├── ReserveCard.js          Financial calculation card (5 rows)
-│   │   │   └── CardRow.js              Individual card row element
-│   │   ├── CTABubble/
-│   │   │   └── CTABubble.js            Consultation offer bubble (teal border)
-│   │   ├── CTACard/
-│   │   │   └── CTACard.js              Fixed-content CTA card
-│   │   ├── CTAQuickReplies/
-│   │   │   └── CTAQuickReplies.js      Yes/No buttons for CTA
-│   │   ├── QuickReplies/
-│   │   │   └── QuickReplies.js         Stage-specific quick reply buttons
-│   │   ├── StageBadge/
-│   │   │   └── StageBadge.js           Header badge showing current stage
-│   │   ├── StageDivider/
-│   │   │   └── StageDivider.js         Visual separator between stage transitions
-│   │   └── ContextTag/
-│   │       └── ContextTag.js           Amber tag for returning client context
-│   │
-│   ├── ui/
-│   │   ├── domRefs.js                  Cached DOM element references
-│   │   └── renderer.js                 All rendering functions & UI orchestration
-│   │
-│   ├── styles/
-│   │   └── main.css                    All styling (CSS variables, layouts)
-│   │
-│   ├── SpecStructure/
-│   │   └── specs/                      Acceptance-criteria specs (implemented)
-│   │       ├── 01_conversational_engine_spec.md
-│   │       ├── 02_reserve_calculator_spec.md
-│   │       ├── 03_profile_stage_spec.md
-│   │       └── 04_cta_spec.md
-│   │
-│   └── __tests__/
-│       ├── useConversation.test.js
-│       ├── tokenParser.test.js
-│       ├── anthropicService.test.js
-│       ├── formatReserve.test.js
-│       ├── ReserveCard.test.js
-│       ├── profileStageManager.test.js
-│       └── commercialCTA.test.js
+│   ├── factory/
+│   ├── providers/
+│   └── routes/
 │
 └── Docs/                               Reference and legacy documents (read-only)
     ├── Business/
@@ -152,12 +177,12 @@ MVP/
 
 | Module | File | Owns | Does NOT own |
 |--------|------|------|--------------|
-| ConversationalEngine | `src/hooks/useConversation.js` | Messages, API calls, token parsing, localStorage | Stage/client state, rendering |
-| ProfileStageManager | `src/hooks/useProfileStage.js` | Stage tracking, client type, localStorage | API calls, rendering |
-| Service | `src/services/anthropicService.js` | HTTP transport only | Any state |
-| Parser | `src/utils/tokenParser.js` | Pure token extraction | Any side effects |
-| Renderer | `src/ui/renderer.js` | All DOM updates | State management, API calls |
-| Components | `src/components/` | DOM creation, formatting | State, API calls |
+| ConversationalEngine | `mvp-frontend/src/hooks/useConversation.js` | Messages, API calls, token parsing, localStorage | Stage/client state, rendering |
+| ProfileStageManager | `mvp-frontend/src/hooks/useProfileStage.js` | Stage tracking, client type, localStorage | API calls, rendering |
+| Service | `mvp-frontend/src/services/anthropicService.js` | HTTP transport only | Any state |
+| Parser | `mvp-frontend/src/utils/tokenParser.js` | Pure token extraction | Any side effects |
+| Renderer | `mvp-frontend/src/ui/renderer.js` | All DOM updates | State management, API calls |
+| Components | `mvp-frontend/src/components/` | DOM creation, formatting | State, API calls |
 
 ### localStorage Keys
 
@@ -199,4 +224,4 @@ Out-of-scope requests should be acknowledged warmly and redirected to Maurício'
 - **No backend** — client-side only; API key entered at runtime (not stored server-side)
 - **Direct browser API calls** — uses `anthropic-dangerous-direct-browser-access` header; must be secured before production
 - **No authentication, analytics, or admin dashboard** — planned for V2+
-- **WhatsApp config uses placeholder** — `src/constants/whatsapp.js` phone number must be updated before production
+- **WhatsApp config uses placeholder** — `mvp-frontend/src/constants/whatsapp.js` phone number must be updated before production
