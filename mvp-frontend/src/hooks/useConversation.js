@@ -37,6 +37,18 @@ function loadFromStorage() {
   }
 }
 
+/** Histórico para a API — sem a saudação inicial (só UI/localStorage). Regra canônica também no backend (sanitizeMessages). */
+function messagesForApi(messages) {
+  const [first, ...rest] = messages;
+  if (
+    first?.role === "assistant" &&
+    first.content === OPENING_MESSAGE.content
+  ) {
+    return rest;
+  }
+  return messages;
+}
+
 /**
  * Creates a conversational engine that manages message history, API calls,
  * localStorage persistence, and token parsing.
@@ -80,7 +92,7 @@ export function useConversation() {
     _notify();
 
     try {
-      const rawResponse = await callAnthropicAPI(_messages);
+      const rawResponse = await callAnthropicAPI(messagesForApi(_messages));
       const parsed = parseSpecialTokens(rawResponse);
 
       // Store raw response so the model sees its own tokens in future turns

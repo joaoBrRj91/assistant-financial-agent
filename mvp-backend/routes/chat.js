@@ -1,5 +1,6 @@
 const express = require('express')
 const LLMFactory = require('../factory/LLMFactory')
+const { sanitizeMessagesForAnthropic } = require('../utils/sanitizeMessages')
 
 const router = express.Router()
 
@@ -19,6 +20,15 @@ router.post('/chat', async (req, res) => {
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'messages must be a non-empty array' })
+  }
+
+  const safeMessages = sanitizeMessagesForAnthropic(messages)
+  if (safeMessages.length === 0) {
+    return res.status(400).json({ error: 'no valid user messages after sanitization' })
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[chat route] sanitized messages:', safeMessages.length)
   }
 
   try {

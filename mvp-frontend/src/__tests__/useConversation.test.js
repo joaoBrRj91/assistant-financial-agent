@@ -67,6 +67,21 @@ describe('useConversation', () => {
     })
   })
 
+  describe('sendMessage — API payload', () => {
+    it('does not send the opening assistant message to the API', async () => {
+      const engine = useConversation()
+      await engine.sendMessage('Olá bot')
+
+      expect(callAnthropicAPI).toHaveBeenCalledTimes(1)
+      const apiMessages = callAnthropicAPI.mock.calls[0][0]
+      expect(apiMessages[0].role).toBe('user')
+      expect(apiMessages[0].content).toBe('Olá bot')
+      expect(
+        apiMessages.some(m => m.content?.includes(OPENING_MESSAGE_FRAGMENT))
+      ).toBe(false)
+    })
+  })
+
   describe('sendMessage — optimistic update', () => {
     it('appends the user message to messages[] immediately before the API resolves', () => {
       let resolveAPI
