@@ -10,7 +10,11 @@
       "Bash(npx vitest:*)",
       "Bash(npm test:*)",
       "Bash(xargs grep:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(ls -la /c/Users/joaon/Projetos/Assistente Financeiro \\\\\\(FinBot\\\\\\)/3-Project/MVP/mvp-backend/)",
+      "Bash(git -C \"C:/Users/joaon/Projetos/Assistente Financeiro \\(FinBot\\)/3-Project/MVP\" log --oneline -10)",
+      "Bash(git -C \"C:/Users/joaon/Projetos/Assistente Financeiro \\(FinBot\\)/3-Project/MVP\" check-ignore -v \"mvp-frontend/src/config.js\")",
+      "Bash(git:*)"
     ]
   }
 }

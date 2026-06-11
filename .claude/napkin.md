@@ -14,7 +14,7 @@
    Do instead: when testing browser flow, always have an Anthropic API key ready to paste at the prompt screen.
 
 3. **[2026-05-08] Tests use Vitest with jsdom — run `npm run test`**
-   Do instead: run `npm run test` to execute all 7 test files; do not use jest or other runners.
+   Do instead: run `npm run test` to execute all 8 test files; do not use jest or other runners.
 
 ## Shell & Command Reliability
 1. **[2026-05-08] Working directory has spaces — always quote paths**

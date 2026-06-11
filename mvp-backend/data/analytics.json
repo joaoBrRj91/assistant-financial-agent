@@ -1,0 +1,47 @@
+{
+  "stages": {
+    "start": {
+      "uniqueUsers": 11,
+      "sessions": [
+        "f6a438c4-21e6-4389-8130-76fe504456d8",
+        "f5dae452-513b-477e-8163-e845f11aa86d",
+        "3f05db94-e513-44fa-be18-5b84d70c155c",
+        "2f6dbaed-a036-463e-ab07-6c7e3fa0c41f",
+        "c8b7e441-f63f-41aa-ae3a-8ee6ce4093ce",
+        "9b08a24a-6ec7-44af-abe2-ed0ebea3ac5a",
+        "d3215825-5b07-4ed7-aaea-6671dd730c00",
+        "d12e69de-ee93-4f37-aa4b-8c0f1beb8058",
+        "e3a7c425-c295-4313-8905-5477488db228",
+        "0b484b7f-20b8-4f9f-87db-a3d4a441bba9",
+        "b4a032cb-9cc0-4e3f-afe5-67ed38bf9087"
+      ]
+    },
+    "identification": {
+      "uniqueUsers": 0,
+      "sessions": []
+    },
+    "diagnosis": {
+      "uniqueUsers": 1,
+      "sessions": [
+        "f5dae452-513b-477e-8163-e845f11aa86d"
+      ]
+    },
+    "organization": {
+      "uniqueUsers": 1,
+      "sessions": [
+        "f5dae452-513b-477e-8163-e845f11aa86d"
+      ]
+    },
+    "reserve": {
+      "uniqueUsers": 1,
+      "sessions": [
+        "f5dae452-513b-477e-8163-e845f11aa86d"
+      ]
+    },
+    "lead": {
+      "uniqueUsers": 0,
+      "sessions": []
+    }
+  },
+  "lastUpdated": "2026-06-04T14:53:53.123Z"
+}
