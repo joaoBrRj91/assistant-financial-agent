@@ -1,7 +1,7 @@
 {
   "stages": {
     "start": {
-      "uniqueUsers": 10,
+      "uniqueUsers": 11,
       "sessions": [
         "f6a438c4-21e6-4389-8130-76fe504456d8",
         "f5dae452-513b-477e-8163-e845f11aa86d",
@@ -12,7 +12,8 @@
         "d3215825-5b07-4ed7-aaea-6671dd730c00",
         "d12e69de-ee93-4f37-aa4b-8c0f1beb8058",
         "e3a7c425-c295-4313-8905-5477488db228",
-        "0b484b7f-20b8-4f9f-87db-a3d4a441bba9"
+        "0b484b7f-20b8-4f9f-87db-a3d4a441bba9",
+        "b4a032cb-9cc0-4e3f-afe5-67ed38bf9087"
       ]
     },
     "identification": {
@@ -42,5 +43,5 @@
       "sessions": []
     }
   },
-  "lastUpdated": "2026-05-30T14:51:33.153Z"
+  "lastUpdated": "2026-06-04T14:53:53.123Z"
 }
