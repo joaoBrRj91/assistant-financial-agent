@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: finbot-mvp-backend
+    runtime: node
+    rootDir: mvp-backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: LLM_PROVIDER
+        value: anthropic
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: https://joaoBrRj91.github.io
+      - key: NODE_ENV
+        value: production
