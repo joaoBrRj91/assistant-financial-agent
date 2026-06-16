@@ -1,107 +1,111 @@
-import { useConversation }  from './hooks/useConversation.js'
-import { useProfileStage }  from './hooks/useProfileStage.js'
-import { buildWhatsAppUrl } from './utils/whatsapp.js'
-import { isAffirmative }    from './utils/ctaDetector.js'
-import { WHATSAPP_CONFIG }  from './constants/whatsapp.js'
-import { sessionId, trackStage } from './services/analyticsService.js'
+import { useConversation } from "./hooks/useConversation.js";
+import { useProfileStage } from "./hooks/useProfileStage.js";
+import { buildWhatsAppUrl } from "./utils/whatsapp.js";
+import { isAffirmative } from "./utils/ctaDetector.js";
+import { WHATSAPP_CONFIG } from "./constants/whatsapp.js";
+import { sessionId, trackStage } from "./services/analyticsService.js";
+import { app, chatArea, msgInput, sendBtn, typingEl } from "./ui/domRefs.js";
 import {
-  app, chatArea, msgInput, sendBtn, typingEl,
-} from './ui/domRefs.js'
-import {
-  renderStageBadge, renderQuickReplies, renderBotMessage, appendMessage,
-} from './ui/renderer.js'
+  renderStageBadge,
+  renderQuickReplies,
+  renderBotMessage,
+  appendMessage,
+} from "./ui/renderer.js";
 
-let conversation = null
-let profile = null
-let renderedCount = 0
+let conversation = null;
+let profile = null;
+let renderedCount = 0;
 
 function handleWhatsApp() {
-  const url = buildWhatsAppUrl(WHATSAPP_CONFIG.phone, WHATSAPP_CONFIG.message)
-  window.open(url, '_blank')
+  const url = buildWhatsAppUrl(WHATSAPP_CONFIG.phone, WHATSAPP_CONFIG.message);
+  window.open(url, "_blank");
 }
 
 function submitMessage(text) {
-  if (text === '__whatsapp__') { handleWhatsApp(); return }
-
-  const trimmed = text.trim()
-  if (!trimmed || !conversation) return
-
-  // Affirmative reply in CTA stage opens WhatsApp directly, no API call
-  if (profile.getState().currentStage === 'lead' && isAffirmative(trimmed)) {
-    handleWhatsApp()
-    return
+  if (text === "__whatsapp__") {
+    handleWhatsApp();
+    return;
   }
 
-  msgInput.value = ''
-  conversation.sendMessage(trimmed)
+  const trimmed = text.trim();
+  if (!trimmed || !conversation) return;
+
+  // Affirmative reply in CTA stage opens WhatsApp directly, no API call
+  if (profile.getState().currentStage === "lead" && isAffirmative(trimmed)) {
+    handleWhatsApp();
+    return;
+  }
+
+  msgInput.value = "";
+  conversation.sendMessage(trimmed);
 }
 
 function onStateChange(state) {
-  const { messages, isLoading, lastPayload } = state
-  const newMessages = messages.slice(renderedCount)
+  const { messages, isLoading, lastPayload } = state;
+  const newMessages = messages.slice(renderedCount);
 
   for (let i = 0; i < newMessages.length; i++) {
-    const msg = newMessages[i]
-    const isLast = renderedCount + i === messages.length - 1
+    const msg = newMessages[i];
+    const isLast = renderedCount + i === messages.length - 1;
 
-    if (msg.role === 'user') {
-      profile.processUserMessage(msg.content)
-      appendMessage('user', msg.content)
-      renderedCount++
-    } else if (msg.role === 'assistant') {
-      if (isLoading) break // wait for full response before rendering bot bubble
-      const payload = isLast ? lastPayload : null
-      renderBotMessage(msg.content, payload, profile)
-      renderedCount++
+    if (msg.role === "user") {
+      profile.processUserMessage(msg.content);
+      appendMessage("user", msg.content);
+      renderedCount++;
+    } else if (msg.role === "assistant") {
+      if (isLoading) break; // wait for full response before rendering bot bubble
+      const payload = isLast ? lastPayload : null;
+      renderBotMessage(msg.content, payload, profile);
+      renderedCount++;
     }
   }
 
-  typingEl.hidden = !isLoading
-  sendBtn.disabled = isLoading
-  msgInput.disabled = isLoading
+  typingEl.hidden = !isLoading;
+  sendBtn.disabled = isLoading;
+  msgInput.disabled = isLoading;
 
-  const { currentStage } = profile.getState()
-  renderStageBadge(currentStage)
-  renderQuickReplies(currentStage, submitMessage)
+  const { currentStage } = profile.getState();
+  renderStageBadge(currentStage);
+  renderQuickReplies(currentStage, submitMessage);
 
-  chatArea.scrollTop = chatArea.scrollHeight
+  chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function initApp() {
-  profile = useProfileStage()
+  profile = useProfileStage();
 
   // Wrap stage-advancing methods to fire analytics without touching internals
-  const _origProcessResponseText = profile.processResponseText
-  profile.processResponseText = function(text) {
-    const newStage = _origProcessResponseText(text)
-    if (newStage) trackStage(sessionId, newStage)
-    return newStage
-  }
+  const _origProcessResponseText = profile.processResponseText;
+  profile.processResponseText = function (text) {
+    const newStage = _origProcessResponseText(text);
+    if (newStage) trackStage(sessionId, newStage);
+    return newStage;
+  };
 
-  const _origForceStage = profile.forceStage
-  profile.forceStage = function(stage) {
-    const before = profile.getState().currentStage
-    _origForceStage(stage)
-    const after = profile.getState().currentStage
-    if (after !== before) trackStage(sessionId, after)
-  }
+  const _origForceStage = profile.forceStage;
+  profile.forceStage = function (stage) {
+    const before = profile.getState().currentStage;
+    _origForceStage(stage);
+    const after = profile.getState().currentStage;
+    if (after !== before) trackStage(sessionId, after);
+  };
 
-  trackStage(sessionId, 'start')
+  trackStage(sessionId, "start");
 
-  conversation = useConversation()
+  conversation = useConversation();
 
-  conversation.subscribe(onStateChange)
+  conversation.subscribe(onStateChange);
 
   // Render persisted state (if any) or the opening message
-  onStateChange(conversation.getState())
+  onStateChange(conversation.getState());
 
-  msgInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      submitMessage(msgInput.value)
+  msgInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submitMessage(msgInput.value);
     }
-  })
-  sendBtn.addEventListener('click', () => submitMessage(msgInput.value))
+  });
+  sendBtn.addEventListener("click", () => submitMessage(msgInput.value));
 }
 
-initApp()
+initApp();

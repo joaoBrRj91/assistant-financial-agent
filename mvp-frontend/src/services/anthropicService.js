@@ -1,4 +1,7 @@
-const BACKEND_URL = 'http://localhost:3001/api/chat'
+// TODO: replace the production URL below with your actual Render service name before deploying
+const BACKEND_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api/chat'
+  : 'https://finbot-mvp-backend.onrender.com/api/chat'
 
 /**
  * Sends the conversation history to the FinBot backend and returns the raw response text.
