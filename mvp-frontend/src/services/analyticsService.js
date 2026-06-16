@@ -1,5 +1,8 @@
 const SESSION_KEY = 'mf_analytics_session_id'
-const ANALYTICS_URL = 'http://localhost:3001/api/analytics/stage'
+// TODO: replace the production URL below with your actual Render service name before deploying
+const ANALYTICS_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api/analytics/stage'
+  : 'https://finbot-mvp-backend.onrender.com/api/analytics/stage'
 
 function getSessionId() {
   let id = sessionStorage.getItem(SESSION_KEY)

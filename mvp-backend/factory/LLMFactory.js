@@ -1,10 +1,12 @@
 const AnthropicProvider = require('../providers/AnthropicProvider')
 const OpenAIProvider = require('../providers/OpenAIProvider')
+const GeminiProvider = require('../providers/GeminiProvider')
 
 // Registry of available providers. Add new entries here to extend the factory.
 const PROVIDERS = {
   anthropic: AnthropicProvider,
   openai: OpenAIProvider,
+  gemini: GeminiProvider,
 }
 
 /**
