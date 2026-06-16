@@ -1,7 +1,7 @@
 {
   "stages": {
     "start": {
-      "uniqueUsers": 11,
+      "uniqueUsers": 15,
       "sessions": [
         "f6a438c4-21e6-4389-8130-76fe504456d8",
         "f5dae452-513b-477e-8163-e845f11aa86d",
@@ -13,12 +13,20 @@
         "d12e69de-ee93-4f37-aa4b-8c0f1beb8058",
         "e3a7c425-c295-4313-8905-5477488db228",
         "0b484b7f-20b8-4f9f-87db-a3d4a441bba9",
-        "b4a032cb-9cc0-4e3f-afe5-67ed38bf9087"
+        "b4a032cb-9cc0-4e3f-afe5-67ed38bf9087",
+        "3a1baa78-8a3d-4bc7-be08-3d17e63fc94d",
+        "a081b371-dd3e-4238-ab38-975186974e4a",
+        "9f475133-70e9-4f1b-8f65-ebfd991bb9df",
+        "89020ec4-689c-4c48-90a3-a8eb1d232c36"
       ]
     },
     "identification": {
-      "uniqueUsers": 0,
-      "sessions": []
+      "uniqueUsers": 3,
+      "sessions": [
+        "3a1baa78-8a3d-4bc7-be08-3d17e63fc94d",
+        "9f475133-70e9-4f1b-8f65-ebfd991bb9df",
+        "89020ec4-689c-4c48-90a3-a8eb1d232c36"
+      ]
     },
     "diagnosis": {
       "uniqueUsers": 1,
@@ -43,5 +51,5 @@
       "sessions": []
     }
   },
-  "lastUpdated": "2026-06-04T14:53:53.123Z"
+  "lastUpdated": "2026-06-16T22:28:43.457Z"
 }
