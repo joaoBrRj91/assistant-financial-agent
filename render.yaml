@@ -7,8 +7,8 @@ services:
     startCommand: node server.js
     envVars:
       - key: LLM_PROVIDER
-        value: anthropic
-      - key: ANTHROPIC_API_KEY
+        value: gemini
+      - key: GOOGLE_API_KEY
         sync: false
       - key: FRONTEND_ORIGIN
         value: https://joaoBrRj91.github.io
